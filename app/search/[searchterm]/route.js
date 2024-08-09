@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import data from "../../data/data"
 export async function GET(request, { params }) {
+
+   
+
     const { searchterm } = params;
+
 
     if (!searchterm) {
         return NextResponse.json({ error: 'Search term is required' }, { status: 400 });
@@ -17,7 +21,7 @@ export async function GET(request, { params }) {
     });
 
     // Flatten the array of arrays and remove duplicates
-    result = [...new Set(result.flat())];
+    // result = [...new Set(result.flat())];
 
     // console.log(result); // Ensure this prints the correct filtered results
     return NextResponse.json(result);
