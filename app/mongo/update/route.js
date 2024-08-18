@@ -8,10 +8,9 @@ export async function GET() {
   const header = headers();
 
 
-
-  const email = header.get('email')
-
-  console.log(email)
+  const orderid = header.get('orderid')
+  const status = header.get('status')
+  console.log(orderid,status)
 
   const client = new MongoClient(process.env.MONGODB_URI);
   console.log(process.env.MONGODB_URI)
@@ -24,9 +23,21 @@ export async function GET() {
 
     // Choose a name for your collection
     const collection = database.collection("ecommerce-users");
-    const allData = await collection.find({"email":email}).toArray();
 
-    return NextResponse.json(allData, { status: 200 });
+
+
+     // Update the document
+     await collection.updateOne(
+        { orderid: orderid}, // Filter
+        { $set: { status:status} } // Update
+      );
+  
+      // Retrieve the updated document
+      const updatedDocument = await collection.findOne({
+        orderid: orderid
+      });
+
+    return NextResponse.json(updatedDocument, { status: 200 });
 
   } catch (error) {
     return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
@@ -41,6 +52,6 @@ export async function OPTIONS() {
   const response = NextResponse.json({}, { status: 200 });
   response.headers.append('Access-Control-Allow-Origin', '*');
   response.headers.append('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  response.headers.append('Access-Control-Allow-Headers', 'Content-Type, Authorization, email');
+  response.headers.append('Access-Control-Allow-Headers', 'Content-Type, Authorization, key, orderid, status');
   return response;
 }
